@@ -7,7 +7,7 @@ require("dotenv").config();
 app.use(cors());
 app.use(express.json());
 
-// status check 
+// status check
 app.get("/health", (req, res) => res.json({ ok: true }));
 
 // time end point
