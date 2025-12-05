@@ -2,12 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const connectDB= require("./config/db");
+const authRoutes= require("./routes/authRoutes");
 connectDB();
 
 require("dotenv").config();
 //middlewares
 app.use(cors());
 app.use(express.json());
+app.use("/api", auth)
 
 // status check
 app.get("/health", (req, res) => res.json({ ok: true }));
