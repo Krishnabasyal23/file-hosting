@@ -1,11 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
-const connectDB= require("./config/db");
-const authRoutes= require("./routes/authRoutes");
-connectDB();
-
 require("dotenv").config();
+const connectDB = require("./config/db");
+const auth = require("./routes/authRoutes");
+connectDB();
+const app = express();
 //middlewares
 app.use(cors());
 app.use(express.json());
@@ -16,7 +15,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 
 // time end point
 app.get("/api/time", (req, res) => {
-res.json({ serverTime: new Date().toISOString() });
+    res.json({ serverTime: new Date().toISOString() });
 });
 // start server
 const PORT = process.env.PORT || 3000;
