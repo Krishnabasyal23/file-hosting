@@ -3,12 +3,15 @@ const cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const auth = require("./routes/authRoutes");
+const fileRoutes= require("./routes/fileRoutes");
 connectDB();
 const app = express();
 //middlewares
 app.use(cors());
 app.use(express.json());
 app.use("/api", auth)
+app.use("/api", fileRoutes);
+
 
 // status check
 app.get("/health", (req, res) => res.json({ ok: true }));
