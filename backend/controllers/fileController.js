@@ -20,7 +20,7 @@ exports.uploadFile= async(req,res)=>{
         res.status(500).json({message: "Upload failed", error});
     }
 };
-exports.getPUblicFiles= async(req,res)=>{
+exports.getPublicFiles= async(req,res)=>{
     const files= await File.find({privacy: "public"});
     res.json(files);
 };
