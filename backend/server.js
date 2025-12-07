@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api", auth)
 app.use("/api", fileRoutes);
+//app.use ("/api",authRoutes );
 
 
 // status check
