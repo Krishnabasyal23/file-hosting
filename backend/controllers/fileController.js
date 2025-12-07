@@ -6,16 +6,17 @@ exports.uploadFile = async (req, res) => {
             return res.status(400).json({ message: "No file uploaded" })
         }
         const { privacy } = req.body;
-        const file = new file({
+        const File = new file({
             filename: req.file.filename,
             path: req.file.path,
             size: req.file.size,
-            privacy: privacy || "private"
+            privacy: privacy || "private",
+            uploaded_by: req.userId
         });
-        await file.save();
+        await File.save();
         res.status(201).json({
             message: "File uploaded successfully",
-            file
+            File
         });
     } catch (error) {
         res.status(500).json({ message: "Upload failed", error });
@@ -26,38 +27,59 @@ exports.getPublicFiles = async (req, res) => {
     res.json(files);
 };
 exports.getMyFiles = async (req, res) => {
-    const files = await File.find({ uploaded_by: "test-user" });
-    exports.json(files);
+    const files = await File.find({ uploaded_by: rq.userID });
+    res.json(files);
 };
-exports.deleteFile = async (req, res) => {
-    const file = await File.findById(req.params.id);
-
-    if (!file) {
-        return res.status(404).json({ message: "File not found" });
-    }
-    await File.findByIdAndDelete(req.params.id);
-    res.json({ message: "File deleted" });
-};
-// Delete file(owner only)
-exports.deleteFile = async (req, res) => {
+// download files 
+exports.downloadFile = async (req, res) => {
     try {
         const file = await File.findById(req.params.id);
         if (!file) {
             return res.status(404).json({ message: "File not found" });
         }
-        if (String(file.uploaded_by) !== String(req.userID)) {
-            return res.status(403).json({ message: "Unauthorized delete attempt" });
+        // authetication and ownership check for private files
+        if (file.privacy == "private" && String(file.uploaded_by != String(req.userID))) {
+            return res.status(403).json({ message: "Unauthorized access" });
         }
-        // delete files form upload folder
-        fs.unlink(file.path, async (err) => {
-            if (err) {
-                return res.status(500).json({ message: "Failed to delete file form storage" });
-            }
-            await file.deleteOne();
-            res.json({ message: "File deleted successfully" });
-        });
+        res.download(file.path, file.filename); // serves the file
     }
-    catch (err) {
-        res.status(500).json({message:"File deletion failed"});
+    catch (err){
+        res.status(500).json({message:"Download filed"});
+
+    }
+};
+
+// exports.deleteFile = async (req, res) => {
+//     const file = await File.findById(req.params.id);
+
+//     if (!file) {
+//         return res.status(404).json({ message: "File not found" });
+//     }
+//     await File.findByIdAndDelete(req.params.id);
+//     res.json({ message: "File deleted" });
+// };
+
+
+// Delete file(owner only)
+exports.deleteFile = async (req, res) => {
+        try {
+            const File = await File.findById(req.params.id);
+            if (!file) {
+                return res.status(404).json({ message: "File not found" });
+            }
+            if (String(file.uploaded_by) !== String(req.userID)) {
+                return res.status(403).json({ message: "Unauthorized delete attempt" });
+            }
+            // delete files form upload folder
+            fs.unlink(File.path, async (err) => {
+                if (err) {
+                    return res.status(500).json({ message: "Failed to delete file form storage" });
+                }
+                await file.deleteOne();
+                res.json({ message: "File deleted successfully" });
+            });
+        }
+        catch (err) {
+            res.status(500).json({ message: "File deletion failed" });
         }
     };
