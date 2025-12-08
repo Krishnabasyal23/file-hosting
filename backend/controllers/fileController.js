@@ -1,22 +1,23 @@
 const File = require("../models/File");
 const fs = require("fs");
+// Upload file
 exports.uploadFile = async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: "No file uploaded" })
         }
         const { privacy } = req.body;
-        const File = new file({
+        const newFile = new File({
             filename: req.file.filename,
             path: req.file.path,
             size: req.file.size,
             privacy: privacy || "private",
-            uploaded_by: req.userId
+            uploaded_by: req.userID
         });
-        await File.save();
+        await newFile.save();
         res.status(201).json({
             message: "File uploaded successfully",
-            File
+            newFile
         });
     } catch (error) {
         res.status(500).json({ message: "Upload failed", error });
@@ -27,10 +28,10 @@ exports.getPublicFiles = async (req, res) => {
     res.json(files);
 };
 exports.getMyFiles = async (req, res) => {
-    const files = await File.find({ uploaded_by: rq.userID });
+    const files = await File.find({ uploaded_by: req.userID });
     res.json(files);
 };
-// download files 
+// download files
 exports.downloadFile = async (req, res) => {
     try {
         const file = await File.findById(req.params.id);
@@ -49,6 +50,8 @@ exports.downloadFile = async (req, res) => {
     }
 };
 
+rou
+
 // exports.deleteFile = async (req, res) => {
 //     const file = await File.findById(req.params.id);
 
@@ -64,14 +67,14 @@ exports.downloadFile = async (req, res) => {
 exports.deleteFile = async (req, res) => {
         try {
             const File = await File.findById(req.params.id);
-            if (!file) {
+            if (!File) {
                 return res.status(404).json({ message: "File not found" });
             }
             if (String(file.uploaded_by) !== String(req.userID)) {
                 return res.status(403).json({ message: "Unauthorized delete attempt" });
             }
             // delete files form upload folder
-            fs.unlink(File.path, async (err) => {
+            fs.unlink(file.path, async (err) => {
                 if (err) {
                     return res.status(500).json({ message: "Failed to delete file form storage" });
                 }
