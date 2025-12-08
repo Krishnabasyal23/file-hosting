@@ -1,5 +1,6 @@
 const File = require("../models/File");
 const fs = require("fs");
+const stream = require("fs");
 exports.uploadFile = async (req, res) => {
     try {
         if (!req.file) {
@@ -43,12 +44,11 @@ exports.downloadFile = async (req, res) => {
         }
         res.download(file.path, file.filename); // serves the file
     }
-    catch (err){
-        res.status(500).json({message:"Download filed"});
+    catch (err) {
+        res.status(500).json({ message: "Download filed" });
 
     }
 };
-
 // exports.deleteFile = async (req, res) => {
 //     const file = await File.findById(req.params.id);
 
@@ -62,24 +62,55 @@ exports.downloadFile = async (req, res) => {
 
 // Delete file(owner only)
 exports.deleteFile = async (req, res) => {
-        try {
-            const File = await File.findById(req.params.id);
-            if (!file) {
-                return res.status(404).json({ message: "File not found" });
-            }
-            if (String(file.uploaded_by) !== String(req.userID)) {
-                return res.status(403).json({ message: "Unauthorized delete attempt" });
-            }
-            // delete files form upload folder
-            fs.unlink(File.path, async (err) => {
-                if (err) {
-                    return res.status(500).json({ message: "Failed to delete file form storage" });
-                }
-                await file.deleteOne();
-                res.json({ message: "File deleted successfully" });
-            });
+    try {
+        const File = await File.findById(req.params.id);
+        if (!file) {
+            return res.status(404).json({ message: "File not found" });
         }
-        catch (err) {
-            res.status(500).json({ message: "File deletion failed" });
+        if (String(file.uploaded_by) !== String(req.userID)) {
+            return res.status(403).json({ message: "Unauthorized delete attempt" });
         }
-    };
+        // delete files form upload folder
+        fs.unlink(File.path, async (err) => {
+            if (err) {
+                return res.status(500).json({ message: "Failed to delete file form storage" });
+            }
+            await file.deleteOne();
+            res.json({ message: "File deleted successfully" });
+        });
+    }
+    catch (err) {
+        res.status(500).json({ message: "File deletion failed" });
+    }
+};
+
+//  file streaming
+
+exports.streamFile = async (req, res) => {
+    try {
+        const file = await file.findbyID(req.params.id);
+        if (!file) return res.status(404).json({ message: "File not found" });
+        if (file.pricacy == "private" && String(file.uploaded_by) != String(req.userID)) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
+        const fileStream = stream.createReadStream(file.path);
+        fileStream.pipe(res);
+    } catch (error) {
+        res.status(500).json({ message: "Streaming failed" });
+    }
+};
+
+// public streaming
+exports.publicStreamFile = async (req, res) => {
+    try {
+        const file = await File.findbyId(req.params.id);
+        if (!file || file.privacy != "public") {
+            return res.status(404).json({ message: "File not available publicly" })
+        }
+        const fileStream = stream.createReadStream(file.path);
+        fileStream.pipe(res);
+    } catch (error) {
+        res.status(500).json({ message: "Public streaming failed" });
+    }
+
+};

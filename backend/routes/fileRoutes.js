@@ -13,6 +13,8 @@ router.post("/upload", authMiddleware,upload.single("file"), uploadFile);
 router.get("/public-files", getPublicFiles);
 router.get("/my-files", authMiddleware,getMyFiles);
 router.get("/files/:id/download", authMiddleware, downloadFile);
+router.get("/files/:id/stream", authMiddleware, streamFile);
+router.get("/public/files/:id/stream", publicStreamFile);
 //router.delete("/files/:id", deleteFile);
 router.delete("/files/:id", authMiddleware, deleteFile);
 module.exports=router;
