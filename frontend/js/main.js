@@ -1,117 +1,145 @@
-import { saveToken, getToken, postJSON, postForm, getJSON, del } from "./api.js";
+console.log("Main JS loaded");
 
-const notice = document.getElementById("notice");
+import { postJSON, postForm, getJSON, saveToken, getToken, del } from "./api.js";
 
-function show(msg) {
-    notice.innerHTML = `<div class="notice">${msg}</div>`;
-    setTimeout(() => notice.innerHTML = "", 2000);
-}
+const content = document.getElementById("content");
+const userInfo = document.getElementById("userInfo");
+const logoutBtn = document.getElementById("logoutBtn");
 
-function showPage(page) {
-    document.getElementById("registerPage").style.display = "none";
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("appPage").style.display = "none";
-    document.getElementById(page).style.display = "block";
-}
+// Navigation
+document.getElementById("nav-register").onclick = () => showRegister();
+document.getElementById("nav-login").onclick = () => showLogin();
+document.getElementById("nav-upload").onclick = () => showUploadForm();
+document.getElementById("nav-myfiles").onclick = () => showMyFiles();
+document.getElementById("nav-public").onclick = () => showPublicFiles();
 
-// Page toggles
-document.getElementById("goLogin").onclick = () => showPage("loginPage");
-document.getElementById("goRegister").onclick = () => showPage("registerPage");
+logoutBtn.onclick = () => { localStorage.removeItem("authToken"); location.reload(); }
 
-// Register
-document.getElementById("btnRegister").onclick = async () => {
-    const username = regUsername.value;
-    const email = regEmail.value;
-    const password = regPassword.value;
-
-    const res = await postJSON("/register", { username, email, password });
-    show(res.message);
-
-    if (res.message === "User registered successfully")
-        showPage("loginPage");
-};
-
-// Login
-document.getElementById("btnLogin").onclick = async () => {
-    const email = loginEmail.value;
-    const password = loginPassword.value;
-
-    const res = await postJSON("/login", { email, password });
-
-    if (res.token) {
-        saveToken(res.token);
-        show("Login successful");
-        loadFiles();
-        showPage("appPage");
-    } else {
-        show(res.message || "Login failed");
+function showRegister() {
+    content.innerHTML = `
+    <h2>Register</h2>
+    <input id="reg_user" placeholder="Username"><br>
+    <input id="reg_email" placeholder="Email"><br>
+    <input id="reg_pass" type="password" placeholder="Password"><br>
+    <button id="reg_btn">Register</button>
+    <div id="reg_msg"></div>`;
+    document.getElementById("reg_btn").onclick = async () => {
+        const res = await postJSON("/register", {
+            username: document.getElementById("reg_user").value,
+            email: document.getElementById("reg_email").value,
+            password: document.getElementById("reg_pass").value
+        });
+        document.getElementById("reg_msg").innerText = res.message || JSON.stringify(res);
     }
-};
-
-// Load Files
-async function loadFiles() {
-    const myFiles = await getJSON("/my-files", true);
-    const pubFiles = await getJSON("/public-files");
-
-    const myDiv = document.getElementById("myFiles");
-    const pubDiv = document.getElementById("publicFiles");
-
-    myDiv.innerHTML = "";
-    pubDiv.innerHTML = "";
-
-    myFiles.forEach(f => {
-        myDiv.innerHTML += `
-            <div class="item">
-                ${f.filename}
-                <div class="actions">
-                    <button onclick="downloadFile('${f._id}')">Download</button>
-                    <button onclick="deleteFile('${f._id}')">Delete</button>
-                </div>
-            </div>
-        `;
-    });
-
-    pubFiles.forEach(f => {
-        pubDiv.innerHTML += `
-            <div class="item">
-                ${f.filename}
-                <button onclick="downloadFile('${f._id}')">Download</button>
-            </div>
-        `;
-    });
 }
 
-// Upload
-document.getElementById("btnUpload").onclick = async () => {
-    const file = fileInput.files[0];
-    const privacy = privacySelect.value;
+function showLogin() {
+    content.innerHTML = `
+    <h2>Login</h2>
+    <input id="log_email" placeholder="Email"><br>
+    <input id="log_pass" type="password" placeholder="Password"><br>
+    <button id="log_btn">Login</button>
+    <div id="log_msg"></div>`;
+    document.getElementById("log_btn").onclick = async () => {
+        const res = await postJSON("/login", {
+            email: document.getElementById("log_email").value,
+            password: document.getElementById("log_pass").value
+        });
+        if (res.token) {
+            saveToken(res.token);
+            location.reload();
+        } else {
+            document.getElementById("log_msg").innerText = res.message || JSON.stringify(res);
+        }
+    }
+}
 
-    if (!file) return show("Select a file");
+function showUploadForm() {
+    content.innerHTML = `
+    <h2>Upload File</h2>
+    <input type="file" id="file_input"><br>
+    <select id="privacy">
+    <option value="private">Private</option>
+    <option value="public">Public</option>
+    </select><br>
+    <button id="upload_btn">Upload</button>
+    <div id="upload_msg"></div>`;
+    document.getElementById("upload_btn").onclick = async () => {
+        const fileInput = document.getElementById("file_input");
+        if (!fileInput.files[0]) {
+            alert("Select a file");
+            return;
+        }
+        const form = new FormData();
+        form.append("file", fileInput.files[0]);
+        form.append("privacy", document.getElementById("privacy").value);
 
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("privacy", privacy);
+        const res = await postForm("/upload", form, true);
+        document.getElementById("upload_msg").innerText = res.message || JSON.stringify(res);
+    }
+}
 
-    const res = await postForm("/upload", fd, true);
-    show(res.message);
-    loadFiles();
-};
+async function showMyFiles() {
+    content.innerHTML = `<h2>My Files</h2><div id="my_list"></div>`;
+    const files = await getJSON("/my-files", true);
+    const container = document.getElementById("my_list");
+    if (!Array.isArray(files)) { container.innerText = JSON.stringify(files); return; }
+    container.innerHTML = files.map(f =>
+        `<div class="item">
+    <span>${f.filename} (${f.privacy})</span>
+    <span>
+        <button onclick="downloadFile('${f._id}')">Download</button>
+        <button onclick="deleteFile('${f._id}')">Delete</button>
+    </span>
+    </div>`
+    ).join("");
+}
 
-// Download
+async function showPublicFiles() {
+    content.innerHTML = `<h2>Public Files</h2><div id="pub_list"></div>`;
+    const files = await getJSON("/public-files", false);
+    const container = document.getElementById("pub_list");
+    if (!Array.isArray(files)) { container.innerText = JSON.stringify(files); return; }
+    container.innerHTML = files.map(f =>
+        `<div class="item">
+    <span>${f.filename}</span>
+    <button onclick="downloadFile('${f._id}')">Download</button>
+    </div>`
+    ).join("");
+}
+
 window.downloadFile = async (id) => {
-    window.location = `http://localhost:3000/api/files/${id}/download`;
+    const t = getToken();
+    const headers = {};
+    if (t) headers["Authorization"] = "Bearer " + t;
+    const res = await fetch(`http://localhost:3000/api/files/${id}/download`, {
+        method: "GET",
+        headers
+    });
+    if (!res.ok) {
+        const e = await res.json();
+        alert(e.message || "Download error");
+        return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "";
+    a.click();
+    URL.revokeObjectURL(url);
 };
 
-// Delete
 window.deleteFile = async (id) => {
     const res = await del(`/files/${id}`, true);
-    show(res.message);
-    loadFiles();
+    alert(res.message || JSON.stringify(res));
+    showMyFiles();
 };
-
-// Logout
-document.getElementById("logout").onclick = () => {
-    localStorage.removeItem("authToken");
-    show("Logged out");
-    showPage("loginPage");
-};
+// On page load
+if (getToken()) {
+    logoutBtn.style.display = 'inline-block';
+    userInfo.innerText = "Logged in";
+    showUploadForm();
+} else {
+    showRegister();
+}
