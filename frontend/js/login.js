@@ -1,28 +1,31 @@
 import { postJSON, saveToken } from "../api.js";
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+
+const form = document.getElementById("loginForm");
+const msg = document.getElementById("msg");
+
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
-    const res = await postJSON("/login", { email, password });
+    try {
+        const res = await postJSON("/login", { email, password });
 
-   // const msg = document.getElementById("message");
-
-
-    // async function loginUser() {
-    //     const res = await postJSON("/login", {
-    //         email: email.value,
-    //         password: password.value
-    //     });
-
-    if (res.token) {
-        saveToken(res.token);
-        msg.innerText = "Login successful!";
-        msg.style.color = "green";
-        setTimeout(() => (window.location.href = "upload.html"), 800);
-    } else {
-        msg.innerText = res.message;
+        if (res && res.token) {
+            saveToken(res.token);
+            msg.innerText = "✅ Login successful! Redirecting...";
+            msg.style.color = "green";
+            form.reset();
+            setTimeout(() => {
+                window.location.href = "upload.html"; // go to upload page after login
+            }, 1000);
+        } else {
+            msg.innerText = res.message || "Invalid credentials";
+            msg.style.color = "red";
+        }
+    } catch (err) {
+        msg.innerText = err.message || "Server error";
         msg.style.color = "red";
     }
-}
-);
+});

@@ -1,34 +1,49 @@
 import { getJSON, del } from "../api.js";
 const fileList= document.getElementById("fileList");
+const msg = document.getElementById("msg");
+
 async function loadFiles() {
     try{
-    const files = await getJSON("/my-files", true);//auth
-    list.innerHTML = "";
-    files.forEach(f => {
-        const li = document.createElement("li");
-            li.innerHTML = `
-                ${f.filename} (${f.privacy})
-                <button onclick="downloadFile('${f._id}')">Download</button>
+    const files = await getJSON("/my-files", true);
+        if (!files.length) {
+            filesList.innerHTML = "<p>No files uploaded yet.</p>";
+            return;
+        }
+
+        filesList.innerHTML = "";
+        files.forEach(file => {
+            const div = document.createElement("div");
+            div.className = "file-item";
+            div.innerHTML = `
+                <span>${file.filename} (${(file.size/1024).toFixed(1)} KB) - ${file.privacy}</span>
+                <div>
+                    <button onclick="downloadFile('${file._id}','${file.filename}')">Download</button>
+                    <button onclick="deleteFile('${file._id}')">Delete</button>
+                </div>
             `;
-            fileList.appendChild(li);
+            filesList.appendChild(div);
         });
     } catch (err) {
-        fileList.innerHTML = `<li style="color:red">${err.message}</li>`;
+        msg.innerText = err.message || "Failed to load files";
+        msg.style.color = "red";
     }
 }
-async function downloadFile(id){
-    const token=localStorage.getItem("authToken");
-    const res=await fetch(`http://localhost:3000/api/files/${id}/download`, {
-        headers: { "Authorization": "Bearer " + token }
-    });
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "file";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+window.downloadFile = (id, filename) => {
+    window.open(`http://localhost:3000/api/files/${id}/download`, "_blank");
 }
-loadMyFiles();
-window.downloadFile=downloadFile;
+
+window.deleteFile = async (id) => {
+    try {
+        const res = await del(`/files/${id}`, true);
+        if (res.message) {
+            msg.innerText = res.message;
+            msg.style.color = "green";
+            loadFiles();
+        }
+    } catch (err) {
+        msg.innerText = err.message || "Failed to delete file";
+        msg.style.color = "red";
+    }
+}
+
+loadFiles();
