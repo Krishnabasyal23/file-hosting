@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Secure File Hosting </title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 
 </head>
 <header class="header">
@@ -17,16 +17,56 @@
     </div>
 </header>
 
+<div class="container">
+    <h1> Secure File Hosting</h1>
+    <a class="link" href="register.html">Register</a><br>
+    <a class="link" href="login.html">Login</a><br>
+    <a class="link" href="upload.html">Upload File</a><br>
+    <a class="link" href="myfiles.html">My Files</a><br>
+    <a class="link" href="downloads.html">Public Files</a><br>
+</div>
+<div id="notive" class="notice"></div>
+<!-- Register -->
 
-<body>
-    <div class="container">
-        <h1> Secure File Hosting</h1>
-        <a class="link" href="register.html">Register</a><br>
-        <a class="link" href="login.html">Login</a><br>
-        <a class="link" href="upload.html">Upload File</a><br>
-        <a class="link" href="myfiles.html">My Files</a><br>
-        <a class="link" href="downloads.html">Public Files</a><br>
-    </div>
+<div class="page" id="register">
+    <h2>Register</h2>
+    <input id="reg_user" placeholder="Username">
+    <input id="reg_email" placeholder="Email">
+    <input id="reg_pass" type="password" placeholder="Password">
+    <button class="btn" id="reg_btn">Register</button>
+</div>
+
+<!-- Login-->
+<div class="page" id="login">
+    <h2>Login</h2>
+    <input id="log_email" placeholder="Email">
+    <input id="log_pass" type="password" placeholder="Password">
+    <button class="btn" id="log_btn">Login</button>
+</div>
+
+<!-- Upload -->
+<div class="page" id="upload">
+    <h2>Upload File</h2>
+    <input type="file" id="file_input">
+    <select id="privacy">
+        <option value="private">Private</option>
+        <option value="public">Public</option>
+    </select>
+    <button class="btn" id="upload_btn">Upload</button>
+</div>
+
+<!-- My Files -->
+<div class="page" id="myfiles">
+    <h2>My Files</h2>
+    <div id="my_list"></div>
+</div>
+
+<!-- Public Files -->
+<div class="page" id="public">
+    <h2>Public Files</h2>
+    <div id="pub_list"></div>
+</div>
+<script  type="module" src="js/main.js"></script>
 </body>
 
 </html>

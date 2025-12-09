@@ -1,8 +1,9 @@
 const API_BASE = "http://localhost:3000/api";
 // Token management
 export function saveToken(token) {
-    localStorage.setItem("authToken",token);
+    localStorage.setItem("authToken", token);
 }
+
 export function getToken() {
     return localStorage.getItem("authToken");
 }
@@ -72,6 +73,7 @@ export async function getJSON(path, auth = false) {
 
     return res.json();
 }
+
 
 // delete
 
