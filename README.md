@@ -90,6 +90,20 @@ npm start
 Open http://localhost:3001/health to test the server.
 
 
+## API Endpoints
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| POST | `/api/register` | Register a new user |
+| POST | `/api/login` | Login user — returns JWT token |
+| POST | `/api/upload` | Upload file (auth required, form-data) |
+| GET | `/api/public-files` | List all public files |
+| GET | `/api/my-files` | List logged-in user’s files (auth) |
+| GET | `/api/files/:id/download` | Download file (auth + permission) |
+| DELETE | `/api/files/:id` | Delete a file (owner only, auth) |
+
+## Environment Variables (`backend/.env`)
+
 ## Environment Variables Setup
 Create a .env file inside the backend folder:
 MONGO_URI=mongodb://127.0.0.1:27017/secure_file_hosting 
