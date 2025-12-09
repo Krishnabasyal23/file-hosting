@@ -1,11 +1,12 @@
 <div class="container">
     <h2>Login</h2>
+    <form id="loginForm">
+        <input id="email" placeholder="Email">
+        <input id="password" type="password" placeholder="Password">
 
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-
-    <button class="btn" onclick="loginUser()">Login</button>
+        <button type="submit" class="btn">Login</button>
+    </form>
     <div id="msg"></div>
 </div>
 
-<script src="js/login.js"></script>
+<script type="module" src="js/login.js"></script>
