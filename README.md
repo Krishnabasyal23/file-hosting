@@ -1,10 +1,13 @@
 #Secure File Hosting
 Project: SEcure File Hosting Web Application
 
-#Structure
+# Structure
 -/backend
 -/frontend
 -/uploads(ignored)
+
+# Server runs at `http://localhost:3000`.
+Health-check: `http://localhost:3000/health` → should return `{ ok: true }`
 
 #Day1
 Initialize repository and folder structure.
@@ -18,7 +21,7 @@ Added middlewares-
 created test route
 
 # Day3
-connnected MongoDb using MOngoose
+connected MongoDb using Mongoose
 created user model
 installed:
 -bcrypt
@@ -82,12 +85,30 @@ Authorization: Bearer YOUR_TOKEN_HERE
 -Final backend polish and verification
 
 # Day8- frontend
+-REgister, Login, upload, public, download, delete features on file
+-Dynamic fetching of data
+-Secure upload/download via token auth
+
 
 # how to run backend
+open terminal, go to backend folder
 cd backend
 npm install
 npm start
 Open http://localhost:3001/health to test the server.
+
+# How to run frontend
+cd frontend
+npm install
+npm start
+Open http://localhost:3000 in your browser
+The frontend will communicate with the backend at http://localhost:3001
+
+or ,
+
+run backend, start server
+open with live server
+
 
 
 ## API Endpoints
@@ -111,3 +132,13 @@ JWT_SECRET=your_secret_key
 PORT=3000
 
 
+## Demo Flow
+-Register->Login-> Receive Token
+-Upload file(pdf or Mp4) with privacy set
+- View public files(public)/ myfiles(private or public)
+-Download/delete own files
+-logout
+
+#  NOTES
+-make sure MongoDB is running locally.
+-make sure backend is running before using frontend forms
