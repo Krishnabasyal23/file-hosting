@@ -5,33 +5,68 @@ export function saveToken(token) {
 export function getToken() {
     return localStorage.getItem("authToken");
 }
-export async function postJSON(path, body) {
-    const res = await fetch(`${API_BASE}${path}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-    });
-    return res.json();
-}
-export async function getJson(path, auth = false) {
-    const headers = {};
+export async function postJSON(path, body, auth = false) {
+    const headers = { "Content-Type": "application/json" };
+
     if (auth) {
         const t = getToken();
         if (t) headers["Authorization"] = "Bearer " + t;
     }
+
+    const res = await fetch(`${API_BASE}${path}`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body)
+    });
+
+    return res.json();
+}
+
+export async function postForm(path, formData, auth = false) {
+    const headers = {};
+
+    if (auth) {
+        const t = getToken();
+        if (t) headers["Authorization"] = "Bearer " + t;
+    }
+
     const res = await fetch(`${API_BASE}${path}`, {
         method: "POST",
         headers,
         body: formData
     });
+
     return res.json();
 }
-export async function del(path, auth = false) {
+
+export async function getJSON(path, auth = false) {
     const headers = {};
+
     if (auth) {
         const t = getToken();
-        if (t) headers["Authorization"] = "Bearer" + t;
+        if (t) headers["Authorization"] = "Bearer " + t;
     }
-    const res = await fetch(`${API_BASE}${path}`, { method: "DELETE", headers });
+
+    const res = await fetch(`${API_BASE}${path}`, {
+        method: "GET",
+        headers
+    });
+
+    return res.json();
+}
+
+export async function del(path, auth = false) {
+    const headers = {};
+
+    if (auth) {
+        const t = getToken();
+        if (t) headers["Authorization"] = "Bearer " + t;
+    }
+
+    const res = await fetch(`${API_BASE}${path}`, {
+        method: "DELETE",
+        headers
+    });
+
     return res.json();
 }
