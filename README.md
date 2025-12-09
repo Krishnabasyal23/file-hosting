@@ -74,6 +74,12 @@ Authorization: Bearer YOUR_TOKEN_HERE
 -Tested full backend workflow
     -register, login, uploadfile, secure download
 
+# Day7- File Streaming, PUblic Access and Security
+-Added MP4/pdf streaming endpoint
+-Implemented public file sharing route
+-Added global rate limiting middleware
+-Cleaned up unused routes and fixed inconsistencies
+-Final backend polish and verification
 
 # how to run backend
 cd backend

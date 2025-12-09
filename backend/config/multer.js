@@ -3,7 +3,7 @@ const path= require("path");
 const storage= multer.diskStorage({
     destination: "uploads",
     filename:(req,file,cb)=>{
-        cb(nyll, Date.now()+ "-"+ file.originalname);
+        cb(null, Date.now()+ "-"+ file.originalname);
     }
 });
 const fileFilter= (req,file,cb)=>{
@@ -15,7 +15,7 @@ const fileFilter= (req,file,cb)=>{
     }
 };
 const upload= multer({
-    storage, 
+    storage,
     limits:{fileSize: 20*1024*1024},
     fileFilter
 });

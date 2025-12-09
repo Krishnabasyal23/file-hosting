@@ -2,14 +2,20 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./config/db");
-const auth = require("./routes/authRoutes");
+const authRoutes= require("./routes/authRoutes");
 const fileRoutes= require("./routes/fileRoutes");
+const limiter=require("./middleware/rateLimit");
+const authMiddleware = require("./middleware/authMiddleware");
 connectDB();
 const app = express();
-//middlewares
-app.use(cors());
+//middleware
+app.use(cors({
+    origin:"*",
+    credentials:true
+}));
 app.use(express.json());
-app.use("/api", auth)
+app.use(limiter);
+app.use("/api", authRoutes)
 app.use("/api", fileRoutes);
 
 // status check

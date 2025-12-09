@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload File - Secure File Hosting</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<header class="header">
+    <div class="header-left">
+        <h1>Secure File Hosting</h1>
+    </div>
+    <div class="header-right">
+        <span id="usernameDisplay"></span>
+        <button id="logoutBtn" class="btn small">Logout</button>
+    </div>
+</header>
+
+<body>
+    <div class="container">
+        <h2>Upload Files</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="file" required>
+            <select id="privacy">
+                <option value="private">Private</option>
+                <option value="public">Public</option>
+            </select>
+            <button type="submit" class="btn">Upload</button>
+        </form>
+        <div id="msg"></div>
+
+    </div>
+    <script type="module" src="js/upload.js"></script>
+    <script type="module" src="js/header.js"></script>
+
+</body>
+
+</html>
