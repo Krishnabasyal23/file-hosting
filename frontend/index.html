@@ -4,10 +4,11 @@
 <head>
     <meta charset="utf-8">
     <title>Secure File Hosting </title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 
 </head>
-<header class="header">
+<body>
+    <header class="header">
     <div class="header-left">
         <h1>Secure File Hosting</h1>
     </div>
@@ -16,17 +17,17 @@
         <button id="logoutBtn" class="btn small">Logout</button>
     </div>
 </header>
+<nav>
+    <a href="#" id="nav-register">Register</a>
+    <a href="#" id="nav-login">Login</a>
+    <a href="#" id="nav-upload">Upload File</a>
+    <a href="#" id="nav-myfiles">My Files</a>
+    <a href="#" id="nav-public">Public Files</a>
+</nav>
 
-
-<body>
-    <div class="container">
-        <h1> Secure File Hosting</h1>
-        <a class="link" href="register.html">Register</a><br>
-        <a class="link" href="login.html">Login</a><br>
-        <a class="link" href="upload.html">Upload File</a><br>
-        <a class="link" href="myfiles.html">My Files</a><br>
-        <a class="link" href="downloads.html">Public Files</a><br>
-    </div>
+<div id="content"></div>
+<script type="module" src="./js/main.js"></script>
 </body>
+
 
 </html>

@@ -1,8 +1,9 @@
 const API_BASE = "http://localhost:3000/api";
 // Token management
 export function saveToken(token) {
-    localStorage.setItem("authToken",token);
+    localStorage.setItem("authToken", token);
 }
+
 export function getToken() {
     return localStorage.getItem("authToken");
 }
@@ -22,38 +23,28 @@ export async function handleResponse(res) {
     return data;
 }
 
-export async function postJSON(path, body, auth = false) {
-    const headers = { "Content-Type": "application/json" };
-
-    if (auth) {
-        const t = getToken();
-        if (t) headers["Authorization"] = "Bearer " + t;
-    }
-
+export async function postJSON(path, body) {
     const res = await fetch(`${API_BASE}${path}`, {
         method: "POST",
-        headers,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
     });
-
-    return handleResponse(res);
+    return res.json();
 }
 // for uploads
 export async function postForm(path, formData, auth = false) {
     const headers = {};
-
     if (auth) {
         const t = getToken();
         if (t) headers["Authorization"] = "Bearer " + t;
     }
-
     const res = await fetch(`${API_BASE}${path}`, {
         method: "POST",
         headers,
         body: formData
     });
-
     return res.json();
+
 }
 //get request
 
@@ -72,6 +63,7 @@ export async function getJSON(path, auth = false) {
 
     return res.json();
 }
+
 
 // delete
 
